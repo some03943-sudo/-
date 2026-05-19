@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(resourceData) {
+      return isSignedIn() && resourceData.ownerId == request.auth.uid;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Vehicle Rules
+    match /vehicles/{vehicleId} {
+      function isValidVehicle(data) {
+        return data.licensePlate is string && data.licensePlate.size() > 0 && data.licensePlate.size() <= 20 &&
+               data.carType is string && data.carType.size() <= 100 &&
+               data.currentMileage is number &&
+               data.nextServiceMileage is number &&
+               data.ownerId == request.auth.uid &&
+               isValidId(data.ownerId);
+      }
+
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow get: if true; // Publicly accessible via QR code
+      allow create: if isVerified() && isValidVehicle(incoming()) && incoming().createdAt is string;
+      
+      allow update: if isVerified() && isOwner(existing()) && isValidVehicle(incoming()) && (
+        // Tier 1: Owner can modify all non-auth/non-immutable fields
+        incoming().ownerId == existing().ownerId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['licensePlate', 'carType', 'model', 'year', 'driverName', 'driverPhone', 'oilType', 'lastOilChangeDate', 'currentMileage', 'nextServiceMileage', 'notes', 'driverNotes', 'carPhoto', 'driverPhoto', 'updatedAt', 'reminders', 'location', 'lastLocationUpdate'])
+      );
+
+      allow delete: if isOwner(existing());
+    }
+
+    // Maintenance Log Rules
+    match /maintenance_logs/{logId} {
+      function isValidLog(data) {
+        return data.vehicleId is string && isValidId(data.vehicleId) &&
+               data.mileage is number &&
+               data.date is string &&
+               data.ownerId == request.auth.uid &&
+               isValidId(data.ownerId);
+      }
+
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow get: if isOwner(existing());
+      allow create: if isVerified() && isValidLog(incoming()) && incoming().createdAt is string;
+      
+      allow update: if isVerified() && isOwner(existing()) && isValidLog(incoming()) && (
+        incoming().ownerId == existing().ownerId &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['vehicleId', 'date', 'mileage', 'cost', 'notes', 'mechanicName', 'filterType', 'invoicePhoto', 'beforePhoto', 'afterPhoto', 'type'])
+      );
+
+      allow delete: if isOwner(existing());
+    }
+
+    // Oil Operation Rules
+    match /oil_operations/{operationId} {
+      function isValidOperation(data) {
+        return data.barcode is string && data.barcode.size() > 0 &&
+               data.driverName is string && data.driverName.size() > 0 &&
+               data.plateNumber is string && data.plateNumber.size() > 0 &&
+               data.ownerId == request.auth.uid &&
+               isValidId(data.ownerId);
+      }
+
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow get: if true; // Allow lookup by barcode potentially public
+      allow create: if isVerified() && isValidOperation(incoming()) && incoming().createdAt is string;
+      
+      allow update: if isVerified() && isOwner(existing()) && isValidOperation(incoming()) && (
+        incoming().ownerId == existing().ownerId &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['driverName', 'vehicleType', 'plateNumber', 'oilType', 'oilQuantity', 'oilChangeDate', 'nextOilChangeDate', 'currentMileage', 'nextMileage', 'notes'])
+      );
+
+      allow delete: if isOwner(existing());
+    }
+  }
+}

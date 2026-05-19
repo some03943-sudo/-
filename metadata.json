@@ -1,0 +1,10 @@
+{
+  "name": "Remix: OilTrack",
+  "description": "A professional vehicle oil change and maintenance tracker with QR code support, maintenance timelines, and mileage monitoring.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

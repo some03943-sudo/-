@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">OilTrack</string>
+    <string name="title_activity_main">OilTrack</string>
+    <string name="package_name">com.drivecare.oiltrack</string>
+    <string name="custom_url_scheme">com.drivecare.oiltrack</string>
+</resources>

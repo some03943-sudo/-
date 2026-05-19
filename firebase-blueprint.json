@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "Vehicle": {
+      "title": "Vehicle",
+      "description": "Represents a vehicle in the fleet",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "carPhoto": { "type": "string" },
+        "licensePlate": { "type": "string" },
+        "carType": { "type": "string" },
+        "driverName": { "type": "string" },
+        "driverPhoto": { "type": "string" },
+        "driverPhone": { "type": "string" },
+        "lastOilChangeDate": { "type": "string", "format": "date-time" },
+        "oilType": { "type": "string" },
+        "currentMileage": { "type": "number" },
+        "nextServiceMileage": { "type": "number" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "lastLocationUpdate": { "type": "string", "format": "date-time" },
+        "notes": { "type": "string" },
+        "driverNotes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "licensePlate", "carType", "currentMileage", "nextServiceMileage"]
+    },
+    "MaintenanceLog": {
+      "title": "Maintenance Log",
+      "description": "A record of maintenance performed on a vehicle",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "vehicleId": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "invoicePhoto": { "type": "string" },
+        "filterType": { "type": "string" },
+        "mechanicName": { "type": "string" },
+        "cost": { "type": "number" },
+        "beforePhoto": { "type": "string" },
+        "afterPhoto": { "type": "string" },
+        "mileage": { "type": "number" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["vehicleId", "ownerId", "date", "mileage"]
+    },
+    "OilOperation": {
+      "title": "Oil Operation",
+      "description": "Detailed oil change operation with barcode",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "barcode": { "type": "string" },
+        "driverName": { "type": "string" },
+        "vehicleType": { "type": "string" },
+        "plateNumber": { "type": "string" },
+        "oilType": { "type": "string" },
+        "oilQuantity": { "type": "string" },
+        "oilChangeDate": { "type": "string", "format": "date-time" },
+        "nextOilChangeDate": { "type": "string", "format": "date-time" },
+        "currentMileage": { "type": "number" },
+        "nextMileage": { "type": "number" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "barcode", "driverName", "vehicleType", "plateNumber", "oilChangeDate", "currentMileage"]
+    }
+  },
+  "firestore": {
+    "/vehicles/{vehicleId}": {
+      "schema": "Vehicle",
+      "description": "Collection of vehicles"
+    },
+    "/maintenance_logs/{logId}": {
+      "schema": "MaintenanceLog",
+      "description": "Collection of maintenance logs"
+    },
+    "/oil_operations/{operationId}": {
+      "schema": "OilOperation",
+      "description": "Collection of oil change operations"
+    }
+  }
+}

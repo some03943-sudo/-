@@ -1,11 +1,24 @@
-<div align="center">
+# OilTrack Mobile (Android)
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+Professional Oil Change Management System converted to a mobile application using **Capacitor**.
 
-  <h1>Built with AI Studio</h2>
+## Mobile Features
+- **Android Support**: Native Android project files included in the `/android` directory.
+- **RTL Language Support**: Full Arabic interface with Right-to-Left layout.
+- **QR/Barcode Scanning**: Integrated camera support for scanning vehicle and operation codes.
+- **Thermal Printer Preparation**: Ready for integration with mobile thermal printers.
+- **Modern Dark UI**: Optimized for mobile screens with high-contrast dark dashboard.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## How to Build the APK
+1. **Prerequisites**: Ensure you have Android Studio and Java JDK installed on your machine.
+2. **Open Project**: Open the `/android` folder in Android Studio.
+3. **Build APK**:
+   - In Android Studio, go to `Build` > `Build Bundle(s) / APK(s)` > `Build APK(s)`.
+   - Alternatively, run `./gradlew assembleDebug` from the `/android` terminal.
+4. **Locate APK**: The generated APK will be found in `android/app/build/outputs/apk/debug/app-debug.apk`.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
-
-</div>
+## Web Development
+The core application continues to run as a React Vite app.
+- Development: `npm run dev`
+- Web Build: `npm run build`
+- Sync Mobile: `npm run mobile:sync`
